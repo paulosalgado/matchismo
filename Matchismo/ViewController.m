@@ -37,17 +37,23 @@
                           forState:UIControlStateNormal];
         [sender setTitle:@"" forState:UIControlStateNormal];
         
+        self.flipCount++;
+        
     } else {
         
         Card *card = [self.deck drawRandomCard];
         
-        [sender setBackgroundImage:[UIImage imageNamed:@"cardFront"]
-                          forState:UIControlStateNormal];
-        [sender setTitle:card.contents forState:UIControlStateNormal];
+        if (card) {
+            
+            [sender setBackgroundImage:[UIImage imageNamed:@"cardFront"]
+                              forState:UIControlStateNormal];
+            [sender setTitle:card.contents forState:UIControlStateNormal];
+            
+            self.flipCount++;
+        }
         
     }
     
-    self.flipCount++;
 }
 
 - (void)setFlipCount:(int)flipCount {
@@ -55,6 +61,5 @@
     self.flipsLabel.text = [NSString stringWithFormat:@"Flips: %d", self.flipCount];
     NSLog(@"flipsCount = %d", self.flipCount);
 }
-
 
 @end
