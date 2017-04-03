@@ -19,14 +19,21 @@
     
     if (cardsCount) {
         
-        for (PlayingCard *otherCard in otherCards) {
+        for (int i = 0; i < cardsCount; i++) {
             
-            if ([self.suit isEqualToString:otherCard.suit]) {
-                score += 1;
-            } else if (self.rank == otherCard.rank) {
-                score += 4;
+            id card = [otherCards objectAtIndex:i];
+            
+            if ([card isKindOfClass:[PlayingCard class]]) {
+                
+                PlayingCard *otherCard = (PlayingCard *)card;
+                
+                if ([self.suit isEqualToString:otherCard.suit]) {
+                    score += 1;
+                } else if (self.rank == otherCard.rank) {
+                    score += 4;
+                }
+                
             }
-            
         }
         
     }
