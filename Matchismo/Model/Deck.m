@@ -9,7 +9,9 @@
 #import "Deck.h"
 
 @interface Deck()
+
 @property (strong, nonatomic) NSMutableArray *cards; // of Card
+
 @end
 
 @implementation Deck
@@ -19,7 +21,8 @@
     return _cards;
 }
 
-- (void)addCard:(Card *)card atTop:(BOOL)atTop {
+- (void)addCard:(Card *)card
+          atTop:(BOOL)atTop {
     
     if (atTop) {
         [self.cards insertObject:card atIndex:0];
