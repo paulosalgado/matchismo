@@ -15,16 +15,20 @@
 - (int)match:(NSArray *)otherCards {
     
     int score = 0;
+    int cardsCount = (int) [otherCards count];
     
-    if ([otherCards count] == 1) {
+    if (cardsCount) {
         
-        PlayingCard *otherCard = [otherCards firstObject];
-        
-        if ([self.suit isEqualToString:otherCard.suit]) {
-            score = 1;
-        } else if (self.rank == otherCard.rank) {
-            score = 4;
+        for (PlayingCard *otherCard in otherCards) {
+            
+            if ([self.suit isEqualToString:otherCard.suit]) {
+                score += 1;
+            } else if (self.rank == otherCard.rank) {
+                score += 4;
+            }
+            
         }
+        
     }
     
     return score;

@@ -12,7 +12,13 @@
 
 @interface CardMatchingGame : NSObject
 
+#define NOT_SELECTED_MATCH_MODE -1
+#define TWO_CARD_MATCH_MODE 0
+#define THREE_CARD_MATCH_MODE 1
+
 @property (nonatomic, readonly) NSInteger score;
+@property (nonatomic, readonly) NSString *status;
+@property (nonatomic) NSUInteger gameMode;
 
 // designated initializer
 - (instancetype)initWithCardCount:(NSUInteger)count

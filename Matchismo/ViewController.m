@@ -15,18 +15,16 @@
 
 @property (nonatomic, strong) Deck *deck;
 @property (nonatomic, strong) CardMatchingGame *game;
+@property (nonatomic) NSInteger lastIndex;
+
+@property (weak, nonatomic) IBOutlet UISegmentedControl *matchModeSelector;
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
+@property (weak, nonatomic) IBOutlet UILabel *gameStatus;
 @property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
 
 @end
 
 @implementation ViewController
-
-- (CardMatchingGame *)game {
-    if (!_game) _game = [[CardMatchingGame alloc] initWithCardCount:[self.cardButtons count]
-                                                          usingDeck:[self createDeck]];
-    return _game;
-}
 
 - (Deck *)deck {
     if (!_deck) _deck = [self createDeck];
@@ -37,9 +35,33 @@
     return [[PlayingCardDeck alloc] init];
 }
 
+- (CardMatchingGame *)game {
+    
+    if (!_game) _game = [[CardMatchingGame alloc] initWithCardCount:[self.cardButtons count]
+                                                          usingDeck:[self createDeck]];
+    
+    return _game;
+}
+
+- (IBAction)startNewGame:(id)sender {
+    
+    _game = [[CardMatchingGame alloc] initWithCardCount:[self.cardButtons count]
+                                              usingDeck:[self createDeck]];
+    
+    [self updateUI];
+    self.matchModeSelector.enabled = true;
+}
+
 - (IBAction)touchCardButton:(UIButton *)sender {
+    
+    if (self.matchModeSelector.enabled) {
+        self.game.gameMode = [self.matchModeSelector selectedSegmentIndex];
+        self.matchModeSelector.enabled = false;
+    }
+    
     int cardIndex = (int) [self.cardButtons indexOfObject:sender];
     [self.game chooseCardAtIndex:cardIndex];
+    
     [self updateUI];
 }
 
@@ -48,14 +70,19 @@
     for (UIButton *cardButton in self.cardButtons) {
         
         int cardIndex = (int) [self.cardButtons indexOfObject:cardButton];
-        
         Card *card = [self.game cardAtIndex:cardIndex];
-        [cardButton setTitle:[self titleForCard:card] forState:UIControlStateNormal];
-        [cardButton setBackgroundImage:[self backgroundImageForCard:card] forState:UIControlStateNormal];
+        
+        [cardButton setTitle:[self titleForCard:card]
+                    forState:UIControlStateNormal];
+        
+        [cardButton setBackgroundImage:[self backgroundImageForCard:card]
+                              forState:UIControlStateNormal];
+        
         cardButton.enabled = !card.isMatched;
     }
     
     self.scoreLabel.text = [NSString stringWithFormat:@"Score: %d", (int) self.game.score];
+    self.gameStatus.text = self.game.status;
 }
 
 - (NSString *)titleForCard:(Card *)card {

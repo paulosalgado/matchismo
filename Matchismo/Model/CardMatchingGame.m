@@ -12,6 +12,7 @@
 
 @property (nonatomic, readwrite) NSInteger score;
 @property (nonatomic, strong) NSMutableArray *cards; // of Card
+@property (nonatomic, readwrite) NSString *status;
 
 @end
 
@@ -21,9 +22,25 @@ static const int MISMATCH_PENALTY = 2;
 static const int MATCH_BONUS = 4;
 static const int COST_TO_CHOOSE = 1;
 
+@synthesize gameMode = _gameMode;
+
 - (NSMutableArray *)cards {
     if (!_cards) _cards = [[NSMutableArray alloc] init];
     return _cards;
+}
+
+- (void)setGameMode:(NSUInteger)gameMode {
+    
+    if (gameMode == TWO_CARD_MATCH_MODE ||
+        gameMode == THREE_CARD_MATCH_MODE) {
+        
+        _gameMode = gameMode;
+    }
+    
+}
+
+- (instancetype)init {
+    return nil;
 }
 
 - (instancetype) initWithCardCount:(NSUInteger)count
@@ -46,6 +63,7 @@ static const int COST_TO_CHOOSE = 1;
             
         }
         
+        self.gameMode = NOT_SELECTED_MATCH_MODE;
     }
     
     return self;
@@ -58,9 +76,15 @@ static const int COST_TO_CHOOSE = 1;
     if (!card.isMatched) {
         
         if (card.isChosen) {
+            
             card.chosen = NO;
+            
+            _status = @"";
+            
         } else {
             // match against another card
+            
+            _status = card.contents;
             
             for (Card *otherCard in self.cards) {
                 if (otherCard.isChosen && !otherCard.isMatched) {
@@ -68,12 +92,20 @@ static const int COST_TO_CHOOSE = 1;
                     int matchScore = [card match:@[otherCard]];
                     
                     if (matchScore) {
-                        self.score += matchScore * MATCH_BONUS;
+                        
+                        int roundScore = matchScore * MATCH_BONUS;
+                        self.score += roundScore;
                         card.matched = YES;
                         otherCard.matched = YES;
+                        
+                        _status = [NSString stringWithFormat:@"Matched %@ %@ for %d points.", card.contents, otherCard.contents, roundScore];
+                        
                     } else {
+                        
                         self.score -= MISMATCH_PENALTY;
                         otherCard.chosen = NO;
+                        
+                        _status = [NSString stringWithFormat:@"%@ %@ don't match! %d point penalty!", card.contents, otherCard.contents, MISMATCH_PENALTY];
                     }
                     
                     break;
@@ -90,10 +122,6 @@ static const int COST_TO_CHOOSE = 1;
 
 - (Card *)cardAtIndex:(NSUInteger)index {
     return (index < [self.cards count]) ? self.cards[index] : nil;
-}
-
-- (instancetype)init {
-    return nil;
 }
 
 @end
